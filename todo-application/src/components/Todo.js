@@ -14,6 +14,11 @@ const Todo = (props) => {
         // }
     ])
 
+    // filter result
+    const [filterResult, setFilterResult] = useState([])
+    const [filterBy,setFilterBy] = useState('pending')
+    const [filterOptions,setFilterOptions] = useState(['all','pending','completed'])
+
     // to add description in todo list (input text description)
     const [inputTodo,setInputTodo] = useState('')
 
@@ -34,7 +39,12 @@ const Todo = (props) => {
     useEffect(() => {
         const localList = JSON.parse(localStorage.getItem(LOCAL_STORAGE_TODO_KEY)) || []
         setList(localList)
+        setFilterResult(localList)
     },[])
+
+    // useEffect(() => {
+    //     setFilterResult(list)
+    // },[list])
 
     // event handlers
 
@@ -54,6 +64,7 @@ const Todo = (props) => {
                 setInputCategory('')
                 setInputTodo('')
                 setIsTodoCompleted(false)
+                setFilterBy('all')
             }
         } else {
             // edit a todo
@@ -78,6 +89,7 @@ const Todo = (props) => {
                 setInputTodo('')
                 setIsEditMode(false)
                 setIsTodoCompleted(false)
+                setFilterBy('all')
             }
             // console.log('edit mode')
         }
@@ -122,6 +134,30 @@ const Todo = (props) => {
         const isCompleted = val.toLowerCase() === 'yes' ? true : false
         console.log(isCompleted)
         setIsTodoCompleted(isCompleted)
+    }
+
+    const changeFilterOptionsHandler = (e) => {
+        console.log(e.target.value)
+        const filterVal = e.target.value
+        setFilterBy(filterVal)
+        switch (filterVal.toLowerCase()) {
+            case 'all':
+                setFilterResult(list)
+                break;
+            case 'pending':
+                const pendingRecords = list.filter(cur => cur.isCompleted === false)
+                console.log(pendingRecords,'pending')
+                setFilterResult(pendingRecords)
+                break;
+            case 'completed':
+                const completedRecords = list.filter(cur => cur.isCompleted === true)
+                console.log(completedRecords,'completed')
+                setFilterResult(completedRecords)
+                break;
+            default:
+                setFilterResult(list)
+                break;
+        }
     }
     
     return (
@@ -173,6 +209,18 @@ const Todo = (props) => {
                 }
             </form>
             <h2 className='center'>Todo</h2>
+            <label htmlFor='filter-options'>
+                <h3>Filter the Todo by</h3>
+            </label>
+            <div>
+                <select id='filter-options' value={filterBy} onChange={changeFilterOptionsHandler}>
+                    {filterOptions.map((cur,i) => {
+                        return (
+                            <option value={cur} key={i}>{cur}</option>
+                        )
+                    })}
+                </select>
+            </div>
             <table>
                 <thead>
                     <tr className='center'>
@@ -185,7 +233,7 @@ const Todo = (props) => {
                 </thead>
                 <tbody className='center'>
                     {
-                        list.map((cur,i) => {
+                        filterResult.map((cur,i) => {
                             return (
                                 <tr key={i+1}>
                                     <td>{i+1}</td>
