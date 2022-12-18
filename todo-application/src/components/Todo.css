@@ -1,0 +1,23 @@
+.center {
+    text-align: center;
+}
+
+table {
+    border-collapse: collapse;
+    width: 90%;
+    margin: auto;
+    border: 1px solid;
+}
+
+tr,td,th {
+    border: 1px solid;
+}
+
+td,th {
+    padding: 10px;
+}
+
+.action-btns {
+    display: flex;
+    justify-content: space-around;
+}
