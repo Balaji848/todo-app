@@ -16,7 +16,7 @@ const Todo = (props) => {
 
     // filter result
     const [filterResult, setFilterResult] = useState([])
-    const [filterBy,setFilterBy] = useState('pending')
+    const [filterBy,setFilterBy] = useState('all')
     const [filterOptions,setFilterOptions] = useState(['all','pending','completed'])
 
     // to add description in todo list (input text description)
@@ -42,9 +42,11 @@ const Todo = (props) => {
         setFilterResult(localList)
     },[])
 
-    // useEffect(() => {
-    //     setFilterResult(list)
-    // },[list])
+    useEffect(() => {
+        if(filterBy === 'all') {
+            setFilterResult(list)
+        }
+    })
 
     // event handlers
 
@@ -60,7 +62,12 @@ const Todo = (props) => {
                     category: inputCategory,
                     isCompleted: isTodoCompleted
                 }])
-                localStorage.setItem(LOCAL_STORAGE_TODO_KEY, JSON.stringify(list))
+                localStorage.setItem(LOCAL_STORAGE_TODO_KEY, JSON.stringify([...list,{
+                    id: list.length,
+                    description: inputTodo,
+                    category: inputCategory,
+                    isCompleted: isTodoCompleted
+                }]))
                 setInputCategory('')
                 setInputTodo('')
                 setIsTodoCompleted(false)
@@ -84,7 +91,7 @@ const Todo = (props) => {
                 })
                 // console.log(editedList)
                 setList(editedList)
-                localStorage.setItem(LOCAL_STORAGE_TODO_KEY, JSON.stringify(list))
+                localStorage.setItem(LOCAL_STORAGE_TODO_KEY, JSON.stringify(editedList))
                 setInputCategory('')
                 setInputTodo('')
                 setIsEditMode(false)
@@ -115,6 +122,7 @@ const Todo = (props) => {
             cur.id = i
         })
         setList(filteredLsit)
+        setFilterBy('all')
         localStorage.setItem(LOCAL_STORAGE_TODO_KEY, JSON.stringify(filteredLsit))
         // console.log(filteredLsit)
     }
