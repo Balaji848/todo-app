@@ -16,6 +16,7 @@ const Todo = (props) => {
 
     // filter result
     const [filterResult, setFilterResult] = useState([])
+    const [backupResult, setBackupResult] = useState([])
     const [filterBy,setFilterBy] = useState('all')
     const [filterOptions,setFilterOptions] = useState(['all','pending','completed'])
     const [searchTodo,setSearchTodo] = useState('')
@@ -41,11 +42,13 @@ const Todo = (props) => {
         const localList = JSON.parse(localStorage.getItem(LOCAL_STORAGE_TODO_KEY)) || []
         setList(localList)
         setFilterResult(localList)
+        setBackupResult(localList)
     },[])
 
     useEffect(() => {
         if(filterBy === 'all' && !searchTodo) {
             setFilterResult(list)
+            setBackupResult(list)
         }
     })
 
@@ -156,19 +159,23 @@ const Todo = (props) => {
         switch (filterVal.toLowerCase()) {
             case 'all':
                 setFilterResult(list)
+                setBackupResult(list)
                 break;
             case 'pending':
                 const pendingRecords = list.filter(cur => cur.isCompleted === false)
                 // console.log(pendingRecords,'pending')
                 setFilterResult(pendingRecords)
+                setBackupResult(pendingRecords)
                 break;
             case 'completed':
                 const completedRecords = list.filter(cur => cur.isCompleted === true)
                 // console.log(completedRecords,'completed')
                 setFilterResult(completedRecords)
+                setBackupResult(completedRecords)
                 break;
             default:
                 setFilterResult(list)
+                setBackupResult(list)
                 break;
         }
     }
@@ -194,14 +201,12 @@ const Todo = (props) => {
         // console.log(e.target.value)
         const searchVal = e.target.value
         setSearchTodo(searchVal.toLowerCase())
-        const searchRecords = filterResult.filter((cur) => {
+        const searchRecords = backupResult.filter((cur) => {
             const description = cur.description.toLowerCase()
             return description.includes(searchVal)
         })
         setFilterResult(searchRecords)
-        // if(!searchVal) {
-        //     setFilterBy('all')
-        // }
+        // console.log(searchRecords)
     },2000)
     
     return (
